@@ -1,9 +1,17 @@
 #  TravelMind AI – Intelligent Multi-Agent Travel Planner
 
-TravelMind AI is an AI-powered stateful multi-agent travel planning system built using LangGraph and Google Gemini featuring Human-in-the-Loop decision making, tool calling, persistent memory, and real-time API integrations.
+- TravelMind AI is an AI-powered stateful multi-agent travel planning system built using LangGraph and Google Gemini featuring Human-in-the-Loop decision making, tool calling, persistent memory, and real-time API integrations.
 The system coordinates specialized AI agents to collaboratively plan complete, personalized travel experiences from destination planning, flight and hotel search, activity recommendations to budget optimization, transportation, and itinerary generation.
 ---
+##  Demo
+ - The AI Agent can be accessed here - https://travelmind-ai-agent.streamlit.app/
 
+
+
+https://github.com/user-attachments/assets/c00be4e2-40d8-4518-b1e0-7371a96e2cc7
+
+
+   
 ##  Features
  - AI Trip Understanding
    - Extracts structured trip details such as destination, dates, budget, duration, departure city, and interests from natural language using Gemini. Automatically identifies missing information for follow-up.
@@ -147,13 +155,6 @@ SERP_API_KEY=YOUR_SERPAPI_KEY
 ```bash
 streamlit run streamlit_app.py
 ```
-
----
-
-
-##  Demo
-
-*Under progress*
 
 ---
 
