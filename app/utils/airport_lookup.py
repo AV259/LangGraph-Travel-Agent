@@ -1,8 +1,15 @@
 import pandas as pd
+from pathlib import Path
 
-airports_df = pd.read_csv(
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+AIRPORTS_CSV_PATH = PROJECT_ROOT / "data" / "airports.csv"
+
+airports_df = pd.read_csv(AIRPORTS_CSV_PATH)
+
+'''airports_df = pd.read_csv(
     "C:\\Users\\Akash Verma\\TravelMind_AI\\data\\airports.csv"
-)
+)'''
 
 # Keeping only airports with IATA codes
 airports_df = airports_df[
