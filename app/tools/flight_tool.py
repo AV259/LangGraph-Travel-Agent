@@ -4,6 +4,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+class FlightSearchTemporaryError(Exception):
+    """Raised when a flight search may succeed if retried."""
+
+
 def search_flights(
     departure_id: str,
     arrival_id: str,
@@ -25,13 +30,19 @@ def search_flights(
 
     search = GoogleSearch(params)
 
-    results = search.get_dict()
+    try:
+        results = search.get_dict()
+    except Exception as exc:
+        raise FlightSearchTemporaryError(
+            "The flight provider could not be reached."
+        ) from exc
 
     #print("Response Keys:", results.keys())
 
     if "error" in results:
-     print("SERP API ERROR:")
-     print(results["error"])
+        raise FlightSearchTemporaryError(
+            f"SerpAPI returned an error: {results['error']}"
+        )
 
     '''print(
     "Best Flights Count:",
@@ -45,10 +56,12 @@ def search_flights(
 
     flights = []
 
-    for option in results.get(
-        "best_flights",
-        []
-    )[:5]:
+    flight_options = (
+        results.get("best_flights", [])
+        or results.get("other_flights", [])
+    )
+
+    for option in flight_options[:5]:
 
         first_leg = option["flights"][0]
         last_leg = option["flights"][-1]

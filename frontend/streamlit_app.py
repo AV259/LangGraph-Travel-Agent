@@ -371,6 +371,7 @@ def init_state() -> None:
         "trip_started": False,
         "trip_text": "",
         "messages": [],
+        "flight_message_shown": False,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -430,7 +431,27 @@ def default_hotel_selection() -> Dict[str, Any]:
 
 
 def invoke_graph(payload: Any) -> Dict[str, Any]:
-    return travel_graph.invoke(payload, config=graph_config())
+    result: Dict[str, Any] = {}
+
+    for mode, chunk in travel_graph.stream(
+        payload,
+        config=graph_config(),
+        stream_mode=["updates", "custom"],
+    ):
+        if mode == "custom":
+            if chunk.get("type") == "flight_retrying":
+                st.info(chunk["message"])
+            continue
+
+        if isinstance(chunk, dict):
+            if "__interrupt__" in chunk:
+                result["__interrupt__"] = chunk["__interrupt__"]
+            else:
+                for node_update in chunk.values():
+                    if isinstance(node_update, dict):
+                        result.update(node_update)
+
+    return result
 
 
 def process_result_loop(result: Dict[str, Any]) -> Dict[str, Any]:
@@ -438,6 +459,11 @@ def process_result_loop(result: Dict[str, Any]) -> Dict[str, Any]:
     Auto-resume only non-user decisions.
     Keep user decisions (flight/hotel/budget) as pending interrupts.
     """
+    flight_message = result.get("flight_message")
+    if flight_message and not st.session_state.flight_message_shown:
+        st.warning(flight_message)
+        st.session_state.flight_message_shown = True
+
     while "__interrupt__" in result:
         interrupt_data = result["__interrupt__"][0].value
 
@@ -469,6 +495,7 @@ def start_trip(trip_text: str) -> None:
     st.session_state.result = None
     st.session_state.messages = []
     st.session_state.dest_preview_continue = False
+    st.session_state.flight_message_shown = False
 
     initial_state = {
         "user_input": trip_text,

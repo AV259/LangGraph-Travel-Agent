@@ -14,6 +14,9 @@ class TravelState(TypedDict):
 
     destination_results: List[Dict]
     flight_results: List[Dict]
+    flight_status: str
+    flight_message: Optional[str]
+    flight_retry_count: int
     hotel_results: List[Dict]
     activity_results: List[Dict]
     restaurant_results: List[Dict]

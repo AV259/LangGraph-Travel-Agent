@@ -20,6 +20,7 @@ from app.agents.budget_agent import budget_agent
 from app.agents.budget_decision_agent import budget_decision_agent
 from app.agents.budget_advisor_agent import budget_advisor_agent
 from app.graph.budget_status_router import budget_status_router
+from app.graph.flight_status_router import flight_status_router
 from app.agents.budget_update_agent import budget_update_agent
 from app.agents.itinerary_agent import itinerary_agent
 from app.agents.itinerary_formatter_agent import itinerary_formatter_agent
@@ -157,9 +158,13 @@ graph_builder.add_edge(
     "flight"
 )
 
-graph_builder.add_edge(
+graph_builder.add_conditional_edges(
     "flight",
-    "flight_advisor"
+    flight_status_router,
+    {
+        "flight_advisor": "flight_advisor",
+        "hotel": "hotel",
+    }
 )
 
 graph_builder.add_edge(
@@ -232,4 +237,3 @@ graph_builder.add_edge(
 )
 
 travel_graph = graph_builder.compile(checkpointer = memory)
-
